@@ -1,0 +1,237 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Vardi Murad</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--cream:#f0ebe3;--muted:#888;--gold:#c9a96e;--fd:'Cormorant Garamond',serif;--fb:'Outfit',sans-serif}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--cream);font-family:var(--fb)}
+#intro{position:fixed;inset:0;z-index:1000;background:#000}
+#intro.done{display:none}
+#intro video{width:100%;height:100%;object-fit:cover}
+
+
+
+
+
+#sb{position:fixed;bottom:30px;right:30px;z-index:1001;padding:10px 24px;background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;font-family:var(--fb);font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+#sb.h{display:none}
+#fl{position:fixed;inset:0;z-index:999;pointer-events:none;opacity:0}
+#ex{position:fixed;inset:0;z-index:998;overflow:hidden}
+.cd{position:absolute;will-change:transform;overflow:hidden;pointer-events:none;opacity:0}
+.cd.on{pointer-events:auto;cursor:pointer;transition:transform .25s ease,box-shadow .25s ease,filter .25s ease}
+.cd.on:hover{z-index:200!important;filter:brightness(1.3)!important;box-shadow:0 8px 30px rgba(201,169,110,.35)!important}
+.cd.on:hover .ct{opacity:1}
+.cb{width:100%;height:100%;transition:filter .3s,opacity .5s}
+.ct{position:absolute;bottom:0;left:0;right:0;padding:5px 7px;background:linear-gradient(transparent,rgba(0,0,0,.85));font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--cream);opacity:0;transition:opacity .25s;font-family:var(--fb);white-space:nowrap;overflow:hidden}
+.fg{position:absolute;will-change:transform;pointer-events:none;opacity:0}
+.em{position:absolute;border-radius:50%;will-change:transform;pointer-events:none;opacity:0}
+.sm{position:absolute;border-radius:50%;filter:blur(45px);will-change:transform;pointer-events:none;opacity:0}
+#so{position:fixed;inset:0;z-index:10;pointer-events:none;opacity:0;transition:opacity .8s ease}
+#so.v{opacity:1}
+.sn{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 40px;display:flex;justify-content:space-between;align-items:center;background:rgba(10,10,10,.88);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);transform:translateY(-40px);opacity:0;transition:all .8s cubic-bezier(.16,1,.3,1);pointer-events:auto}
+.sn.in{transform:translateY(0);opacity:1}
+.nl{font-family:var(--fd);font-size:22px;letter-spacing:.08em;font-weight:300}
+.nk{display:flex;gap:24px}
+.nk a{color:var(--muted);text-decoration:none;font-size:11px;letter-spacing:.12em;text-transform:uppercase;transition:color .2s}
+.nk a:hover{color:var(--cream)}
+.sf{position:fixed;bottom:0;left:0;right:0;z-index:50;padding:12px 40px;text-align:center;font-size:10px;color:var(--muted);letter-spacing:.06em;border-top:1px solid rgba(255,255,255,.04);background:rgba(10,10,10,.88);opacity:0;transform:translateY(20px);transition:all .8s ease;pointer-events:auto}
+.sf.in{opacity:1;transform:translateY(0)}
+@media(max-width:768px){.nk{display:none}}
+</style></head><body>
+<div id="intro"><video id="vid" playsinline muted autoplay preload="auto"><source src="intro.mp4" type="video/mp4"></video></div>
+
+<button id="sb" onclick="skip()">Skip Intro</button>
+<div id="fl"></div><div id="ex"></div>
+<div id="so">
+<nav class="sn" id="nv"><div class="nl">Vardi Murad</div><div class="nk"><a href="#">Work</a><a href="#">Music Videos</a><a href="#">Services</a><a href="#">Contact</a></div></nav>
+<footer class="sf" id="ft">&copy; 2026 Vardi Murad &middot; Stylist &amp; Creative Director</footer>
+</div>
+<script>
+var CATS=[
+{name:"Editorial",n:8,bg:"#d4cfc7"},
+{name:"Music Video",n:7,bg:"#c5c8d4"},
+{name:"Campaign",n:7,bg:"#d4d2c5"},
+{name:"Lookbook",n:6,bg:"#c8d4c5"},
+{name:"Cover Shoot",n:6,bg:"#d4c8c5"},
+{name:"BTS",n:5,bg:"#c5c8d0"},
+{name:"Styling",n:6,bg:"#d0cec5"}
+];
+var ALL=[];CATS.forEach(function(c){for(var i=0;i<c.n;i++)ALL.push({cat:c.name,bg:c.bg,num:i+1})});
+
+function mkShape(){
+  var n=5+Math.floor(Math.random()*4);var pts=[];
+  for(var i=0;i<n;i++){
+    var ang=(i/n)*360;var bx,by;
+    if(ang<90){bx=20+(ang/90)*60+(-15+Math.random()*30);by=Math.random()*12;}
+    else if(ang<180){bx=85+(-12+Math.random()*27);by=10+((ang-90)/90)*70+(-15+Math.random()*30);}
+    else if(ang<270){bx=80-((ang-180)/90)*60+(-15+Math.random()*30);by=85+(-12+Math.random()*27);}
+    else{bx=Math.random()*12;by=80-((ang-270)/90)*65+(-15+Math.random()*30);}
+    bx=Math.max(0,Math.min(100,Math.round(bx)));by=Math.max(0,Math.min(100,Math.round(by)));
+    pts.push(bx+'% '+by+'%');
+  }
+  return 'polygon('+pts.join(',')+')';
+}
+
+function mkFragShape(){
+  var pts=[];var n=4+Math.floor(Math.random()*3);
+  for(var i=0;i<n;i++){
+    var ang=(i/n)*360;var r=30+Math.random()*70;
+    var x=50+Math.cos(ang*Math.PI/180)*r*(0.3+Math.random()*0.7);
+    var y=50+Math.sin(ang*Math.PI/180)*r*(0.3+Math.random()*0.7);
+    pts.push(Math.round(Math.max(0,Math.min(100,x)))+'% '+Math.round(Math.max(0,Math.min(100,y)))+'%');
+  }
+  return 'polygon('+pts.join(',')+')';
+}
+
+var vid=document.getElementById('vid'),intro=document.getElementById('intro'),
+fl=document.getElementById('fl'),ex=document.getElementById('ex'),
+isDone=false;
+
+vid.play().catch(function(){skip()});
+vid.addEventListener('ended',function(){if(!isDone)explode()});
+
+function skip(){
+  if(isDone)return;isDone=true;vid.pause();
+  document.getElementById('sb').classList.add('h');
+  intro.classList.add('done');placeDirect();
+}
+
+function explode(){
+  if(isDone)return;isDone=true;
+  document.getElementById('sb').classList.add('h');
+  var cx=window.innerWidth/2,cy=window.innerHeight/2,W=window.innerWidth,H=window.innerHeight;
+
+  fl.style.background='radial-gradient(ellipse at 50% 70%,#fff 0%,#ffe066 15%,#ff8800 35%,#ff4400 55%,rgba(0,0,0,.9) 80%)';
+  fl.style.opacity='1';fl.style.transition='opacity .04s';
+  setTimeout(function(){intro.classList.add('done')},40);
+
+  setTimeout(function(){
+    mkBlast(cx,cy,W);
+    fl.style.background='radial-gradient(ellipse at 50% 40%,rgba(30,20,10,.9) 0%,rgba(15,10,5,.7) 35%,rgba(5,3,1,.4) 60%,transparent 85%)';
+    fl.style.transition='opacity .5s';fl.style.opacity='.85';
+  },70);
+
+  setTimeout(function(){
+    fl.style.transition='opacity 1.5s ease';fl.style.opacity='.2';
+    rainDebris(W,H);
+  },500);
+
+  setTimeout(function(){
+    fl.style.transition='opacity 1.5s ease';fl.style.opacity='0';
+    document.querySelectorAll('.sm').forEach(function(s){s.style.transition='opacity 2s ease';s.style.opacity='0';});
+  },2000);
+
+  setTimeout(function(){
+    document.querySelectorAll('.cd').forEach(function(c){c.classList.add('on')});
+    document.querySelectorAll('.em,.fg').forEach(function(el){el.style.transition='opacity .8s';el.style.opacity='0';});
+    ex.style.pointerEvents='auto';revealSite();
+  },3500);
+
+  setTimeout(function(){
+    document.querySelectorAll('.em,.sm,.fg').forEach(function(el){el.remove()});
+    try{fl.remove()}catch(e){}
+  },5000);
+}
+
+function mkBlast(cx,cy,W){
+  for(var i=0;i<100;i++){
+    var e=document.createElement('div');e.className='em';var sz=1+Math.random()*4;
+    var cols=['#ff6a00','#ff4400','#ff8800','#ffcc00','#ffaa00','#fff'];var c=cols[Math.floor(Math.random()*cols.length)];
+    e.style.cssText='border-radius:50%;width:'+sz+'px;height:'+sz+'px;left:'+(cx+(Math.random()-.5)*100)+'px;top:'+cy+'px;background:'+c+';box-shadow:0 0 '+(3+Math.random()*6)+'px '+c+';opacity:0;';
+    var spread=(Math.random()-.5)*W*0.8,up=-(200+Math.random()*500),dl=Math.floor(Math.random()*150);
+    setTimeout((function(el,s,u,d){return function(){el.style.transition='all '+(0.6+Math.random()*0.6)+'s cubic-bezier(.1,.9,.2,1)';el.style.opacity='1';el.style.transform='translate('+s+'px,'+u+'px)';setTimeout(function(){el.style.transition='opacity .4s';el.style.opacity='0';},300+d)}})(e,spread,up,dl),dl);
+    ex.appendChild(e);
+  }
+  for(var i=0;i<16;i++){
+    var s=document.createElement('div');s.className='sm';var sz=100+Math.random()*250;
+    var r=12+Math.floor(Math.random()*20),g=8+Math.floor(Math.random()*12),b=4+Math.floor(Math.random()*8);
+    s.style.cssText='border-radius:50%;filter:blur(45px);width:'+sz+'px;height:'+sz+'px;left:'+(cx-sz/2+(Math.random()-.5)*200)+'px;top:'+(cy-sz/2)+'px;background:rgba('+r+','+g+','+b+','+(0.45+Math.random()*.3)+');opacity:0;';
+    var dx=(Math.random()-.5)*250,dy=-(80+Math.random()*200),sc=(2+Math.random()*2).toFixed(1),dl=Math.floor(Math.random()*120);
+    setTimeout((function(el,x,y,g){return function(){el.style.transition='all 1.5s cubic-bezier(.16,1,.3,1)';el.style.opacity='1';el.style.transform='translate('+x+'px,'+y+'px) scale('+g+')'}})(s,dx,dy,sc),dl);
+    ex.appendChild(s);
+  }
+}
+
+function rainDebris(W,H){
+  var landing=calcLanding(W,H);
+  // Bright fragment colors
+  var fragCols=['#c9a96e','#d4cfc7','#b8b2a6','#e8e2d8','#a89880','#ddd8cf','#c0b8a8','#f0ebe3'];
+
+  // Bright small fragments rain
+  for(var i=0;i<40;i++){
+    var f=document.createElement('div');f.className='fg';
+    var w=4+Math.random()*15,h=4+Math.random()*12;
+    var startX=Math.random()*W,startY=-(20+Math.random()*150);
+    f.style.cssText='width:'+w+'px;height:'+h+'px;left:'+startX+'px;top:'+startY+'px;background:'+fragCols[Math.floor(Math.random()*fragCols.length)]+';clip-path:'+mkFragShape()+';opacity:0;box-shadow:0 1px 4px rgba(0,0,0,.4);';
+    var dl=Math.floor(Math.random()*1800);
+    var drift=(Math.random()-.5)*100,spin=(-400+Math.random()*800).toFixed(0),ey=H+50-startY;
+    setTimeout((function(el,d,s,y){return function(){el.style.opacity='1';el.style.transition='all '+(1+Math.random()*1.5)+'s cubic-bezier(.3,.1,.7,1)';el.style.transform='translate('+d+'px,'+y+'px) rotate('+s+'deg)'}})(f,drift,spin,ey),dl);
+    ex.appendChild(f);
+  }
+
+  // Main BRIGHT debris cards
+  ALL.forEach(function(card,i){
+    var p=landing[i];var d=document.createElement('div');d.className='cd';
+    var cw=p.w,ch=p.h;
+    var startX=p.x+(Math.random()-.5)*120,startY=-(40+Math.random()*200);
+    var fallRot=(-30+Math.random()*60).toFixed(1),landRot=(-14+Math.random()*28).toFixed(1);
+    var shape=mkShape();
+
+    d.style.cssText='width:'+cw+'px;height:'+ch+'px;left:'+startX+'px;top:'+startY+'px;opacity:0;background:'+card.bg+';box-shadow:0 3px 15px rgba(0,0,0,.4);clip-path:'+shape+';';
+    d.dataset.fx=p.x.toFixed(0);d.dataset.fy=p.y.toFixed(0);d.dataset.landRot=landRot;d.dataset.shape=shape;
+
+    var bg=document.createElement('div');bg.className='cb';
+    bg.style.background=card.bg;bg.style.filter='brightness(.85)';bg.style.opacity='0';
+    d.appendChild(bg);
+    var title=document.createElement('div');title.className='ct';title.textContent=card.cat+' '+card.num;
+    d.appendChild(title);
+
+    var delay=100+Math.floor(Math.random()*2000);
+    var fallDur=(0.8+Math.random()*0.8).toFixed(2);
+
+    setTimeout((function(el,rot,dur,lr){return function(){
+      el.style.opacity='1';
+      el.style.transition='all '+dur+'s cubic-bezier(.2,.1,.6,1)';
+      el.style.left=el.dataset.fx+'px';el.style.top=el.dataset.fy+'px';
+      el.style.transform='rotate('+rot+'deg)';
+      setTimeout(function(){
+        el.style.transition='transform .4s cubic-bezier(.34,1.56,.64,1)';
+        el.style.transform='rotate('+lr+'deg)';
+        var cb=el.querySelector('.cb');if(cb){cb.style.transition='opacity .5s ease';cb.style.opacity='1';}
+      },parseFloat(dur)*1000);
+    }})(d,fallRot,fallDur,landRot),delay);
+    ex.appendChild(d);
+  });
+}
+
+function calcLanding(W,H){
+  var pad=45,top=60,bot=42,positions=[],gap=46;
+  for(var i=0;i<ALL.length;i++){
+    var cw=52+Math.random()*58,ch=52+Math.random()*68;
+    var tries=0,px,py,ok;
+    do{px=pad+Math.random()*(W-pad*2-cw);py=top+Math.random()*(H-top-bot-ch);ok=true;
+      for(var j=0;j<positions.length;j++){if(Math.abs(px-positions[j].x)<gap&&Math.abs(py-positions[j].y)<gap){ok=false;break}}
+      tries++;}while(!ok&&tries<120);
+    positions.push({x:px,y:py,w:cw,h:ch});
+  }
+  return positions;
+}
+
+function revealSite(){
+  document.getElementById('so').classList.add('v');
+  setTimeout(function(){document.getElementById('nv').classList.add('in')},0);
+  setTimeout(function(){document.getElementById('ft').classList.add('in')},400);
+}
+
+function placeDirect(){
+  var W=window.innerWidth,H=window.innerHeight,landing=calcLanding(W,H);
+  ALL.forEach(function(card,i){
+    var p=landing[i];var d=document.createElement('div');d.className='cd on';
+    var rot=(-14+Math.random()*28).toFixed(1);var shape=mkShape();
+    d.style.cssText='width:'+p.w+'px;height:'+p.h+'px;left:'+p.x+'px;top:'+p.y+'px;opacity:1;box-shadow:0 3px 15px rgba(0,0,0,.4);transform:rotate('+rot+'deg);background:'+card.bg+';clip-path:'+shape+';transition:transform .25s ease,box-shadow .25s ease,filter .25s ease;overflow:hidden;';
+    var bg=document.createElement('div');bg.className='cb';bg.style.background=card.bg;bg.style.filter='brightness(.85)';d.appendChild(bg);
+    var title=document.createElement('div');title.className='ct';title.textContent=card.cat+' '+card.num;d.appendChild(title);
+    ex.appendChild(d);
+  });
+  ex.style.pointerEvents='auto';revealSite();
+}
+</script></body></html>
