@@ -87,7 +87,26 @@ fl=document.getElementById('fl'),ex=document.getElementById('ex'),
 isDone=false;
 
 vid.play().catch(function(){skip()});
-vid.addEventListener('ended',function(){if(!isDone)explode()});
+
+// The intro video contains its OWN fireball. Watch for that bright warm flash and
+// erupt the debris straight out of it — instead of waiting for the whole clip to end.
+var fcv=document.createElement('canvas'),fctx=fcv.getContext('2d',{willReadFrequently:true});
+fcv.width=32;fcv.height=18;var watching=true;
+function watchFire(){
+  if(!watching||isDone){return;}
+  try{
+    fctx.drawImage(vid,0,0,32,18);
+    var d=fctx.getImageData(0,0,32,18).data,r=0,g=0,b=0,n=d.length/4;
+    for(var i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2];}
+    r/=n;g/=n;b/=n;
+    var bright=(r+g+b)/3,warm=r-b;
+    // bright AND warm = the orange fireball (white background is bright but not warm)
+    if(bright>140&&warm>50){watching=false;explode();return;}
+  }catch(e){}
+  requestAnimationFrame(watchFire);
+}
+vid.addEventListener('playing',function(){requestAnimationFrame(watchFire)});
+vid.addEventListener('ended',function(){if(!isDone)explode()}); // safety fallback
 
 function skip(){
   if(isDone)return;isDone=true;vid.pause();
@@ -97,39 +116,44 @@ function skip(){
 
 function explode(){
   if(isDone)return;isDone=true;
+  watching=false;
   document.getElementById('sb').classList.add('h');
   var cx=window.innerWidth/2,cy=window.innerHeight/2,W=window.innerWidth,H=window.innerHeight;
 
-  fl.style.background='radial-gradient(ellipse at 50% 70%,#fff 0%,#ffe066 15%,#ff8800 35%,#ff4400 55%,rgba(0,0,0,.9) 80%)';
-  fl.style.opacity='1';fl.style.transition='opacity .04s';
-  setTimeout(function(){intro.classList.add('done')},40);
+  // The video's fireball is on screen RIGHT NOW. Erupt the debris out of it immediately
+  // and crossfade the video away — no second flash, no return to the white shot.
+  mkBlast(cx,cy,W);
+  rainDebris(W,H);
+
+  // soft warm glow that bridges the video's fire into our smoke (not a second bright flash)
+  fl.style.background='radial-gradient(ellipse at 50% 45%,rgba(255,170,70,.55) 0%,rgba(120,55,20,.45) 30%,rgba(20,12,6,.35) 62%,transparent 85%)';
+  fl.style.opacity='1';fl.style.transition='opacity .9s ease';
+
+  // crossfade the video out so the debris appears to fly out of the explosion
+  vid.pause();
+  intro.style.transition='opacity .45s ease';
+  intro.style.opacity='0';
+  setTimeout(function(){intro.classList.add('done')},480);
 
   setTimeout(function(){
-    mkBlast(cx,cy,W);
-    rainDebris(W,H);
-    fl.style.background='radial-gradient(ellipse at 50% 40%,rgba(30,20,10,.9) 0%,rgba(15,10,5,.7) 35%,rgba(5,3,1,.4) 60%,transparent 85%)';
-    fl.style.transition='opacity .5s';fl.style.opacity='.85';
-  },70);
-
-  setTimeout(function(){
-    fl.style.transition='opacity 1.5s ease';fl.style.opacity='.2';
+    fl.style.transition='opacity 1.4s ease';fl.style.opacity='.15';
   },420);
 
   setTimeout(function(){
     fl.style.transition='opacity 1.5s ease';fl.style.opacity='0';
     document.querySelectorAll('.sm').forEach(function(s){s.style.transition='opacity 2s ease';s.style.opacity='0';});
-  },2000);
+  },1900);
 
   setTimeout(function(){
     document.querySelectorAll('.cd').forEach(function(c){c.classList.add('on')});
     document.querySelectorAll('.em,.fg').forEach(function(el){el.style.transition='opacity .8s';el.style.opacity='0';});
     ex.style.pointerEvents='auto';revealSite();
-  },3000);
+  },2900);
 
   setTimeout(function(){
     document.querySelectorAll('.em,.sm,.fg').forEach(function(el){el.remove()});
     try{fl.remove()}catch(e){}
-  },5000);
+  },4500);
 }
 
 function mkBlast(cx,cy,W){
