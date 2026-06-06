@@ -47,13 +47,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 </div>
 <script>
 var CATS=[
-{name:"Editorial",n:8,bg:"#d4cfc7"},
-{name:"Music Video",n:7,bg:"#c5c8d4"},
-{name:"Campaign",n:7,bg:"#d4d2c5"},
-{name:"Lookbook",n:6,bg:"#c8d4c5"},
-{name:"Cover Shoot",n:6,bg:"#d4c8c5"},
-{name:"BTS",n:5,bg:"#c5c8d0"},
-{name:"Styling",n:6,bg:"#d0cec5"}
+{name:"Editorial",n:3,bg:"#d4cfc7"},
+{name:"Music Video",n:2,bg:"#c5c8d4"},
+{name:"Campaign",n:2,bg:"#d4d2c5"},
+{name:"Lookbook",n:2,bg:"#c8d4c5"},
+{name:"Cover Shoot",n:2,bg:"#d4c8c5"},
+{name:"BTS",n:2,bg:"#c5c8d0"},
+{name:"Styling",n:2,bg:"#d0cec5"}
 ];
 var ALL=[];CATS.forEach(function(c){for(var i=0;i<c.n;i++)ALL.push({cat:c.name,bg:c.bg,num:i+1})});
 
@@ -113,7 +113,7 @@ function explode(){
   setTimeout(function(){
     fl.style.transition='opacity 1.5s ease';fl.style.opacity='.2';
     rainDebris(W,H);
-  },500);
+  },150);
 
   setTimeout(function(){
     fl.style.transition='opacity 1.5s ease';fl.style.opacity='0';
@@ -157,12 +157,12 @@ function rainDebris(W,H){
   var fragCols=['#c9a96e','#d4cfc7','#b8b2a6','#e8e2d8','#a89880','#ddd8cf','#c0b8a8','#f0ebe3'];
 
   // Bright small fragments rain
-  for(var i=0;i<40;i++){
+  for(var i=0;i<20;i++){
     var f=document.createElement('div');f.className='fg';
     var w=4+Math.random()*15,h=4+Math.random()*12;
     var startX=Math.random()*W,startY=-(20+Math.random()*150);
     f.style.cssText='width:'+w+'px;height:'+h+'px;left:'+startX+'px;top:'+startY+'px;background:'+fragCols[Math.floor(Math.random()*fragCols.length)]+';clip-path:'+mkFragShape()+';opacity:0;box-shadow:0 1px 4px rgba(0,0,0,.4);';
-    var dl=Math.floor(Math.random()*1800);
+    var dl=Math.floor(Math.random()*700);
     var drift=(Math.random()-.5)*100,spin=(-400+Math.random()*800).toFixed(0),ey=H+50-startY;
     setTimeout((function(el,d,s,y){return function(){el.style.opacity='1';el.style.transition='all '+(1+Math.random()*1.5)+'s cubic-bezier(.3,.1,.7,1)';el.style.transform='translate('+d+'px,'+y+'px) rotate('+s+'deg)'}})(f,drift,spin,ey),dl);
     ex.appendChild(f);
@@ -185,7 +185,7 @@ function rainDebris(W,H){
     var title=document.createElement('div');title.className='ct';title.textContent=card.cat+' '+card.num;
     d.appendChild(title);
 
-    var delay=100+Math.floor(Math.random()*2000);
+    var delay=Math.floor(Math.random()*900);
     var fallDur=(0.8+Math.random()*0.8).toFixed(2);
 
     setTimeout((function(el,rot,dur,lr){return function(){
