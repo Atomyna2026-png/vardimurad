@@ -106,14 +106,14 @@ function explode(){
 
   setTimeout(function(){
     mkBlast(cx,cy,W);
+    rainDebris(W,H);
     fl.style.background='radial-gradient(ellipse at 50% 40%,rgba(30,20,10,.9) 0%,rgba(15,10,5,.7) 35%,rgba(5,3,1,.4) 60%,transparent 85%)';
     fl.style.transition='opacity .5s';fl.style.opacity='.85';
   },70);
 
   setTimeout(function(){
     fl.style.transition='opacity 1.5s ease';fl.style.opacity='.2';
-    rainDebris(W,H);
-  },150);
+  },420);
 
   setTimeout(function(){
     fl.style.transition='opacity 1.5s ease';fl.style.opacity='0';
@@ -124,7 +124,7 @@ function explode(){
     document.querySelectorAll('.cd').forEach(function(c){c.classList.add('on')});
     document.querySelectorAll('.em,.fg').forEach(function(el){el.style.transition='opacity .8s';el.style.opacity='0';});
     ex.style.pointerEvents='auto';revealSite();
-  },3500);
+  },3000);
 
   setTimeout(function(){
     document.querySelectorAll('.em,.sm,.fg').forEach(function(el){el.remove()});
@@ -153,30 +153,41 @@ function mkBlast(cx,cy,W){
 
 function rainDebris(W,H){
   var landing=calcLanding(W,H);
+  var cx=W/2,cy=H/2;
   // Bright fragment colors
   var fragCols=['#c9a96e','#d4cfc7','#b8b2a6','#e8e2d8','#a89880','#ddd8cf','#c0b8a8','#f0ebe3'];
 
-  // Bright small fragments rain
-  for(var i=0;i<20;i++){
+  // Small fragments BLASTED out from the center like shrapnel, then fade
+  for(var i=0;i<26;i++){
     var f=document.createElement('div');f.className='fg';
-    var w=4+Math.random()*15,h=4+Math.random()*12;
-    var startX=Math.random()*W,startY=-(20+Math.random()*150);
-    f.style.cssText='width:'+w+'px;height:'+h+'px;left:'+startX+'px;top:'+startY+'px;background:'+fragCols[Math.floor(Math.random()*fragCols.length)]+';clip-path:'+mkFragShape()+';opacity:0;box-shadow:0 1px 4px rgba(0,0,0,.4);';
-    var dl=Math.floor(Math.random()*700);
-    var drift=(Math.random()-.5)*100,spin=(-400+Math.random()*800).toFixed(0),ey=H+50-startY;
-    setTimeout((function(el,d,s,y){return function(){el.style.opacity='1';el.style.transition='all '+(1+Math.random()*1.5)+'s cubic-bezier(.3,.1,.7,1)';el.style.transform='translate('+d+'px,'+y+'px) rotate('+s+'deg)'}})(f,drift,spin,ey),dl);
+    var w=4+Math.random()*14,h=4+Math.random()*11;
+    f.style.cssText='width:'+w+'px;height:'+h+'px;left:'+cx+'px;top:'+cy+'px;background:'+fragCols[Math.floor(Math.random()*fragCols.length)]+';clip-path:'+mkFragShape()+';opacity:0;box-shadow:0 1px 4px rgba(0,0,0,.4);transform:scale(.3);';
+    var ang=Math.random()*Math.PI*2;
+    var dist=140+Math.random()*Math.max(W,H)*0.55;
+    var fx=Math.cos(ang)*dist,fy=Math.sin(ang)*dist-(Math.random()*180);
+    var spin=(-520+Math.random()*1040).toFixed(0),dur=(0.5+Math.random()*0.7).toFixed(2),dl=Math.floor(Math.random()*90);
+    setTimeout((function(el,x,y,s,d){return function(){
+      el.style.opacity='1';
+      el.style.transition='transform '+d+'s cubic-bezier(.12,.7,.3,1),opacity '+d+'s ease';
+      el.style.transform='translate('+x+'px,'+y+'px) rotate('+s+'deg) scale(1)';
+      setTimeout(function(){el.style.transition='opacity .6s ease';el.style.opacity='0';},parseFloat(d)*600);
+    }})(f,fx,fy,spin,dur),dl);
     ex.appendChild(f);
   }
 
-  // Main BRIGHT debris cards
+  // Main debris cards: ejected from the blast center, thrown up & out, then settle
   ALL.forEach(function(card,i){
     var p=landing[i];var d=document.createElement('div');d.className='cd';
     var cw=p.w,ch=p.h;
-    var startX=p.x+(Math.random()-.5)*120,startY=-(40+Math.random()*200);
-    var fallRot=(-30+Math.random()*60).toFixed(1),landRot=(-14+Math.random()*28).toFixed(1);
+    var startX=cx-cw/2+(Math.random()-.5)*70,startY=cy-ch/2+(Math.random()-.5)*70;
+    // apex: above the landing spot — the blast throws the piece up before gravity pulls it down
+    var apexX=p.x+(Math.random()-.5)*50;
+    var apexY=Math.max(30,p.y-(90+Math.random()*200));
+    var spinFast=(-340+Math.random()*680).toFixed(0),landRot=(-14+Math.random()*28).toFixed(1);
     var shape=mkShape();
 
-    d.style.cssText='width:'+cw+'px;height:'+ch+'px;left:'+startX+'px;top:'+startY+'px;opacity:0;background:'+card.bg+';box-shadow:0 3px 15px rgba(0,0,0,.4);clip-path:'+shape+';';
+    d.style.cssText='width:'+cw+'px;height:'+ch+'px;left:'+startX+'px;top:'+startY+'px;opacity:0;background:'+card.bg+';box-shadow:0 3px 15px rgba(0,0,0,.4);clip-path:'+shape+';transform:scale(.25);';
+    d.dataset.ax=apexX.toFixed(0);d.dataset.ay=apexY.toFixed(0);
     d.dataset.fx=p.x.toFixed(0);d.dataset.fy=p.y.toFixed(0);d.dataset.landRot=landRot;d.dataset.shape=shape;
 
     var bg=document.createElement('div');bg.className='cb';
@@ -185,20 +196,24 @@ function rainDebris(W,H){
     var title=document.createElement('div');title.className='ct';title.textContent=card.cat+' '+card.num;
     d.appendChild(title);
 
-    var delay=Math.floor(Math.random()*900);
-    var fallDur=(0.8+Math.random()*0.8).toFixed(2);
+    var delay=Math.floor(Math.random()*110);
+    var burstDur=(0.2+Math.random()*0.12).toFixed(2);
+    var fallDur=(0.55+Math.random()*0.4).toFixed(2);
 
-    setTimeout((function(el,rot,dur,lr){return function(){
+    setTimeout((function(el,sf,bd,fd){return function(){
+      // Phase 1 — explosive ejection: fly out and up to the apex, fast spin, scale up
       el.style.opacity='1';
-      el.style.transition='all '+dur+'s cubic-bezier(.2,.1,.6,1)';
-      el.style.left=el.dataset.fx+'px';el.style.top=el.dataset.fy+'px';
-      el.style.transform='rotate('+rot+'deg)';
+      el.style.transition='left '+bd+'s cubic-bezier(.15,.75,.4,1),top '+bd+'s cubic-bezier(.15,.75,.4,1),transform '+bd+'s cubic-bezier(.15,.75,.4,1),opacity '+bd+'s ease';
+      el.style.left=el.dataset.ax+'px';el.style.top=el.dataset.ay+'px';
+      el.style.transform='rotate('+sf+'deg) scale(1)';
+      // Phase 2 — gravity: fall from apex down to the resting spot and settle
       setTimeout(function(){
-        el.style.transition='transform .4s cubic-bezier(.34,1.56,.64,1)';
-        el.style.transform='rotate('+lr+'deg)';
+        el.style.transition='left '+fd+'s cubic-bezier(.45,0,.75,1),top '+fd+'s cubic-bezier(.45,0,.75,1),transform '+fd+'s cubic-bezier(.34,1.4,.64,1)';
+        el.style.left=el.dataset.fx+'px';el.style.top=el.dataset.fy+'px';
+        el.style.transform='rotate('+el.dataset.landRot+'deg) scale(1)';
         var cb=el.querySelector('.cb');if(cb){cb.style.transition='opacity .5s ease';cb.style.opacity='1';}
-      },parseFloat(dur)*1000);
-    }})(d,fallRot,fallDur,landRot),delay);
+      },parseFloat(bd)*1000);
+    }})(d,spinFast,burstDur,fallDur),delay);
     ex.appendChild(d);
   });
 }
