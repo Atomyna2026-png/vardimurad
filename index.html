@@ -137,23 +137,23 @@ function explode(){
 
   setTimeout(function(){
     fl.style.transition='opacity 1.4s ease';fl.style.opacity='.15';
-  },420);
+  },600);
 
   setTimeout(function(){
-    fl.style.transition='opacity 1.5s ease';fl.style.opacity='0';
-    document.querySelectorAll('.sm').forEach(function(s){s.style.transition='opacity 2s ease';s.style.opacity='0';});
-  },1900);
+    fl.style.transition='opacity 1.6s ease';fl.style.opacity='0';
+    document.querySelectorAll('.sm').forEach(function(s){s.style.transition='opacity 2.2s ease';s.style.opacity='0';});
+  },2400);
 
   setTimeout(function(){
     document.querySelectorAll('.cd').forEach(function(c){c.classList.add('on')});
     document.querySelectorAll('.em,.fg').forEach(function(el){el.style.transition='opacity .8s';el.style.opacity='0';});
     ex.style.pointerEvents='auto';revealSite();
-  },2900);
+  },3600);
 
   setTimeout(function(){
     document.querySelectorAll('.em,.sm,.fg').forEach(function(el){el.remove()});
     try{fl.remove()}catch(e){}
-  },4500);
+  },5100);
 }
 
 function mkBlast(cx,cy,W){
@@ -189,30 +189,40 @@ function rainDebris(W,H){
     var ang=Math.random()*Math.PI*2;
     var dist=140+Math.random()*Math.max(W,H)*0.55;
     var fx=Math.cos(ang)*dist,fy=Math.sin(ang)*dist-(Math.random()*180);
-    var spin=(-520+Math.random()*1040).toFixed(0),dur=(0.5+Math.random()*0.7).toFixed(2),dl=Math.floor(Math.random()*90);
+    var spin=(-520+Math.random()*1040).toFixed(0),dur=(0.9+Math.random()*1.1).toFixed(2),dl=Math.floor(Math.random()*220);
     setTimeout((function(el,x,y,s,d){return function(){
       el.style.opacity='1';
-      el.style.transition='transform '+d+'s cubic-bezier(.12,.7,.3,1),opacity '+d+'s ease';
+      el.style.transition='transform '+d+'s cubic-bezier(.18,.6,.4,1),opacity '+d+'s ease';
       el.style.transform='translate('+x+'px,'+y+'px) rotate('+s+'deg) scale(1)';
-      setTimeout(function(){el.style.transition='opacity .6s ease';el.style.opacity='0';},parseFloat(d)*600);
+      setTimeout(function(){el.style.transition='opacity .8s ease';el.style.opacity='0';},parseFloat(d)*800);
     }})(f,fx,fy,spin,dur),dl);
     ex.appendChild(f);
   }
 
-  // Main debris cards: ejected from the blast center, thrown up & out, then settle
+  // Main debris cards: blasted from the center, tumbling across the whole screen for
+  // ~2.5s through several waypoints, then gravity settles them into their resting spots.
   ALL.forEach(function(card,i){
     var p=landing[i];var d=document.createElement('div');d.className='cd';
     var cw=p.w,ch=p.h;
-    var startX=cx-cw/2+(Math.random()-.5)*70,startY=cy-ch/2+(Math.random()-.5)*70;
-    // apex: above the landing spot — the blast throws the piece up before gravity pulls it down
-    var apexX=p.x+(Math.random()-.5)*50;
-    var apexY=Math.max(30,p.y-(90+Math.random()*200));
-    var spinFast=(-340+Math.random()*680).toFixed(0),landRot=(-14+Math.random()*28).toFixed(1);
+    var startX=cx-cw/2+(Math.random()-.5)*60,startY=cy-ch/2+(Math.random()-.5)*60;
+    var landRot=(-14+Math.random()*28).toFixed(1);
     var shape=mkShape();
 
-    d.style.cssText='width:'+cw+'px;height:'+ch+'px;left:'+startX+'px;top:'+startY+'px;opacity:0;background:'+card.bg+';box-shadow:0 3px 15px rgba(0,0,0,.4);clip-path:'+shape+';transform:scale(.25);';
-    d.dataset.ax=apexX.toFixed(0);d.dataset.ay=apexY.toFixed(0);
-    d.dataset.fx=p.x.toFixed(0);d.dataset.fy=p.y.toFixed(0);d.dataset.landRot=landRot;d.dataset.shape=shape;
+    function rx(){return 40+Math.random()*(W-80-cw);}
+    function ry(){return 50+Math.random()*(H-120-ch);}
+    // eject point — shot out from the center in a random direction at high speed
+    var ang=Math.random()*Math.PI*2,dist=200+Math.random()*Math.max(W,H)*0.42;
+    var ex1=Math.min(W-cw-20,Math.max(20,cx-cw/2+Math.cos(ang)*dist));
+    var ey1=Math.min(H-ch-20,Math.max(20,cy-ch/2+Math.sin(ang)*dist));
+    // flight path: eject -> wander -> wander -> settle at landing
+    var hops=[
+      {x:ex1,    y:ey1,    spin:200+Math.random()*260, dur:0.26+Math.random()*0.1,  ease:'cubic-bezier(.12,.72,.35,1)'},
+      {x:rx(),   y:ry(),   spin:170+Math.random()*300, dur:0.6+Math.random()*0.4,   ease:'cubic-bezier(.45,.05,.55,.95)'},
+      {x:rx(),   y:ry(),   spin:150+Math.random()*280, dur:0.55+Math.random()*0.4,  ease:'cubic-bezier(.45,.05,.55,.95)'},
+      {x:p.x,    y:p.y,     spin:null,                  dur:0.6+Math.random()*0.25,  ease:'cubic-bezier(.34,1.3,.64,1)', settle:true}
+    ];
+
+    d.style.cssText='width:'+cw+'px;height:'+ch+'px;left:'+startX+'px;top:'+startY+'px;opacity:0;background:'+card.bg+';box-shadow:0 3px 15px rgba(0,0,0,.4);clip-path:'+shape+';transform:scale(.25) rotate(0deg);';
 
     var bg=document.createElement('div');bg.className='cb';
     bg.style.background=card.bg;bg.style.filter='brightness(.85)';bg.style.opacity='0';
@@ -220,24 +230,22 @@ function rainDebris(W,H){
     var title=document.createElement('div');title.className='ct';title.textContent=card.cat+' '+card.num;
     d.appendChild(title);
 
-    var delay=Math.floor(Math.random()*110);
-    var burstDur=(0.2+Math.random()*0.12).toFixed(2);
-    var fallDur=(0.55+Math.random()*0.4).toFixed(2);
-
-    setTimeout((function(el,sf,bd,fd){return function(){
-      // Phase 1 — explosive ejection: fly out and up to the apex, fast spin, scale up
-      el.style.opacity='1';
-      el.style.transition='left '+bd+'s cubic-bezier(.15,.75,.4,1),top '+bd+'s cubic-bezier(.15,.75,.4,1),transform '+bd+'s cubic-bezier(.15,.75,.4,1),opacity '+bd+'s ease';
-      el.style.left=el.dataset.ax+'px';el.style.top=el.dataset.ay+'px';
-      el.style.transform='rotate('+sf+'deg) scale(1)';
-      // Phase 2 — gravity: fall from apex down to the resting spot and settle
-      setTimeout(function(){
-        el.style.transition='left '+fd+'s cubic-bezier(.45,0,.75,1),top '+fd+'s cubic-bezier(.45,0,.75,1),transform '+fd+'s cubic-bezier(.34,1.4,.64,1)';
-        el.style.left=el.dataset.fx+'px';el.style.top=el.dataset.fy+'px';
-        el.style.transform='rotate('+el.dataset.landRot+'deg) scale(1)';
-        var cb=el.querySelector('.cb');if(cb){cb.style.transition='opacity .5s ease';cb.style.opacity='1';}
-      },parseFloat(bd)*1000);
-    }})(d,spinFast,burstDur,fallDur),delay);
+    var t=Math.floor(Math.random()*160),rotAcc=0;
+    hops.forEach(function(hp,hi){
+      var thisRot;
+      if(hp.settle){rotAcc=Math.round(rotAcc/360)*360+parseFloat(landRot);thisRot=rotAcc;}
+      else{rotAcc+=hp.spin;thisRot=rotAcc;}
+      (function(el,hop,rot,first){
+        setTimeout(function(){
+          if(first)el.style.opacity='1';
+          el.style.transition='left '+hop.dur+'s '+hop.ease+',top '+hop.dur+'s '+hop.ease+',transform '+hop.dur+'s '+hop.ease+(first?',opacity .25s ease':'');
+          el.style.left=hop.x+'px';el.style.top=hop.y+'px';
+          el.style.transform='rotate('+rot+'deg) scale(1)';
+          if(hop.settle){var cb=el.querySelector('.cb');if(cb){cb.style.transition='opacity .5s ease';cb.style.opacity='1';}}
+        },t);
+      })(d,hp,thisRot,hi===0);
+      t+=hp.dur*1000;
+    });
     ex.appendChild(d);
   });
 }
