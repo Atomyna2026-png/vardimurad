@@ -14,7 +14,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 /* full-screen home — the explosion debris stays put; the page never scrolls */
 #hero{position:fixed;inset:0;overflow:hidden}
 #ex{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none}
-.tab{position:absolute;display:flex;align-items:flex-end;justify-content:center;text-align:center;padding:0 12px 16px;line-height:1.35;background-color:#15151a;background-size:cover;background-position:center;border:1px solid rgba(255,255,255,.72);color:#fff;font-family:var(--fb);font-size:14px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;opacity:0;overflow:hidden;will-change:transform;pointer-events:none;text-shadow:0 1px 10px rgba(0,0,0,.95)}
+.tab{position:absolute;display:flex;align-items:flex-end;justify-content:center;text-align:center;padding:0 12px 22px;line-height:1.35;background-color:#15151a;background-size:cover;background-position:center;border:1px solid rgba(255,255,255,.72);color:#fff;font-family:var(--fb);font-size:17px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;opacity:0;overflow:hidden;will-change:transform;pointer-events:none;text-shadow:0 1px 10px rgba(0,0,0,.95)}
 .tab.on{pointer-events:auto;cursor:pointer;transition:transform .35s ease,border-color .3s ease,box-shadow .3s ease,filter .3s ease}
 .tab.on:hover{border-color:#fff;box-shadow:0 14px 55px rgba(0,0,0,.55);transform:translateY(-6px) scale(1.04);filter:brightness(1.12)}
 .fg{position:absolute;will-change:transform;pointer-events:none;opacity:0}
@@ -293,15 +293,14 @@ function rainDebris(W,H){
 
 function calcLanding(W,H){
   var positions=[];
-  if(W<760){ // phones: 2x2 grid of portrait cards with generous gaps
-    var cw=Math.min(135,(W-90)/2),ch=Math.min(cw*1.5,H*0.33);
-    var gx=Math.min(46,W-2*cw-40),gy=Math.min(46,H*0.07);
-    var totalW=2*cw+gx,totalH=2*ch+gy,sx=(W-totalW)/2,sy=(H-totalH)/2;
-    for(var r=0;r<2;r++)for(var c=0;c<2;c++)positions.push({x:sx+c*(cw+gx),y:sy+r*(ch+gy),w:cw,h:ch});
-  } else { // desktop: evenly-spaced row of 4 big portrait cards, well separated
-    var cw=Math.min(200,W*0.15),ch=Math.min(cw*1.7,H*0.62);
-    var gap=(W-4*cw)/5,y=(H-ch)/2;
-    for(var i=0;i<4;i++)positions.push({x:gap+i*(cw+gap),y:y,w:cw,h:ch});
+  if(W<760){ // phones: 2x2 grid filling the screen
+    var mtop=80,mbot=46,gx=16,gy=16;
+    var cw=(W-3*gx)/2,ch=(H-mtop-mbot-gy)/2;
+    for(var r=0;r<2;r++)for(var c=0;c<2;c++)positions.push({x:gx+c*(cw+gx),y:mtop+r*(ch+gy),w:cw,h:ch});
+  } else { // desktop: 4 tall columns from under the name down to just above the footer
+    var top=108,bot=54,gap=30;
+    var cw=(W-5*gap)/4,ch=H-top-bot;
+    for(var i=0;i<4;i++)positions.push({x:gap+i*(cw+gap),y:top,w:cw,h:ch});
   }
   return positions;
 }
