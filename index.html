@@ -118,10 +118,37 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 <script>
 var TABS=[
 {key:"work",label:"Work",img:"works.jpg"},
-{key:"music",label:"Music Videos",img:"music_videos.jpg"},
+{key:"music",label:"Music Videos",vid:"music_videos.mp4",poster:"music_videos_poster.jpg"},
 {key:"services",label:"Services",img:"services.jpg"},
 {key:"contact",label:"Contact",img:"contacts.jpg"}
 ];
+
+// build a tab's contents: a photo background, OR a hover-to-play video, plus the label
+function fillTab(d,tab){
+  d.onclick=(function(k){return function(){openPanel(k)}})(tab.key);
+  if(tab.vid){
+    var v=document.createElement('video');
+    v.src=tab.vid;if(tab.poster)v.poster=tab.poster;
+    v.muted=true;v.loop=true;v.preload='auto';
+    v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');
+    v.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none';
+    d.appendChild(v);
+    var ov=document.createElement('div');
+    ov.style.cssText='position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.1) 48%,rgba(0,0,0,.32))';
+    d.appendChild(ov);
+    var canHover=window.matchMedia&&window.matchMedia('(hover:hover)').matches;
+    if(canHover){
+      d.addEventListener('mouseenter',function(){var pr=v.play();if(pr&&pr.catch)pr.catch(function(){});});
+      d.addEventListener('mouseleave',function(){try{v.pause();v.currentTime=0;}catch(e){}});
+    }else{ // touch devices have no hover — loop it quietly so the motion still shows
+      var pr=v.play();if(pr&&pr.catch)pr.catch(function(){});
+    }
+  }else{
+    d.style.backgroundImage="linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.1) 48%,rgba(0,0,0,.32)),url('"+tab.img+"')";
+  }
+  var lb=document.createElement('span');lb.textContent=tab.label;lb.style.cssText='position:relative;z-index:2';
+  d.appendChild(lb);
+}
 
 function mkShape(){
   var n=5+Math.floor(Math.random()*4);var pts=[];
@@ -273,9 +300,7 @@ function rainDebris(W,H){
     // start small at the blast center, then expand outward to the final spot — no spinning
     var startX=cx-cw/2,startY=cy-ch/2;
     d.style.cssText='width:'+cw+'px;height:'+ch+'px;left:'+startX+'px;top:'+startY+'px;opacity:0;transform:scale(.2);';
-    d.style.backgroundImage="linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.1) 48%,rgba(0,0,0,.32)),url('"+tab.img+"')";
-    d.textContent=tab.label;
-    d.onclick=(function(k){return function(){openPanel(k)}})(tab.key);
+    fillTab(d,tab);
 
     var delay=560+i*70+Math.floor(Math.random()*60);
     (function(el,px,py){
@@ -326,9 +351,7 @@ function placeDirect(){
   TABS.forEach(function(tab,i){
     var p=landing[i];var d=document.createElement('div');d.className='tab on';
     d.style.cssText='width:'+p.w+'px;height:'+p.h+'px;left:'+p.x+'px;top:'+p.y+'px;opacity:1;';
-    d.style.backgroundImage="linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.1) 48%,rgba(0,0,0,.32)),url('"+tab.img+"')";
-    d.textContent=tab.label;
-    d.onclick=(function(k){return function(){openPanel(k)}})(tab.key);
+    fillTab(d,tab);
     ex.appendChild(d);
   });
   ex.style.pointerEvents='none';revealSite();
