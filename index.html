@@ -49,6 +49,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .socials a:hover{color:var(--cream)}
 .sf{position:fixed;bottom:0;left:0;right:0;z-index:5;padding:14px 40px;text-align:center;font-size:10px;color:var(--muted);letter-spacing:.06em;opacity:0;transition:opacity .8s ease;pointer-events:none}
 .sf.in{opacity:1}
+.eyebrow.sep{margin-top:72px;padding-top:34px;border-top:1px solid rgba(255,255,255,.09)}
+html[data-theme="light"]{--bg:#f2efe9;--cream:#161513;--muted:#6f6a62;--gold:#8a6a2f}
+html[data-theme="light"] .lead,html[data-theme="light"] .svc p{color:#4a453e}
+html[data-theme="light"] .tile{background:#e4dfd6;border-color:rgba(22,21,19,.10)}
+html[data-theme="light"] .tile:hover{border-color:rgba(138,106,47,.55)}
+html[data-theme="light"] .px{border-color:rgba(22,21,19,.18);background:rgba(255,255,255,.55)}
+html[data-theme="light"] .px:hover{background:rgba(138,106,47,.12)}
+html[data-theme="light"] .nl{text-shadow:none}
+html[data-theme="light"] .eyebrow.sep{border-top-color:rgba(22,21,19,.12)}
+html[data-theme="light"] .contact-line a{border-bottom-color:rgba(138,106,47,.4)}
+body{transition:background-color .4s ease,color .4s ease}
+#tt{position:fixed;bottom:26px;right:26px;z-index:950;width:40px;height:40px;display:none;place-items:center;padding:0;cursor:pointer;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.26);border-radius:50%;color:var(--cream);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:background .25s,border-color .25s,opacity .5s;opacity:0}
+#tt.in{display:grid;opacity:1}
+#tt:hover{background:rgba(255,255,255,.19)}
+html[data-theme="light"] #tt{background:rgba(22,21,19,.07);border-color:rgba(22,21,19,.24)}
+html[data-theme="light"] #tt:hover{background:rgba(22,21,19,.15)}
+#tt svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round}
+#tt .s{display:none}
+html[data-theme="light"] #tt .s{display:block}
+html[data-theme="light"] #tt .m{display:none}
+#tt .m{fill:currentColor;stroke:none}
+@media(max-width:768px){#tt{bottom:8px;right:12px;width:34px;height:34px}}
 @media(max-width:768px){.sn{padding:14px 20px}.pwrap{padding:96px 22px 70px}.px{right:16px;top:64px}}
 </style></head><body>
 <div id="intro"><video id="vid" playsinline muted autoplay preload="auto"><source src="intro.mp4" type="video/mp4"></video></div>
@@ -80,7 +102,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 <div class="panel" id="p-music">
   <div class="px" onclick="home()">&times;</div>
   <div class="pwrap">
-    <div class="eyebrow">Music Videos</div>
+    <div class="eyebrow">Videos</div>
     <h2 class="htitle">Styling for screen<br>&amp; performance.</h2>
     <p class="lead">Wardrobe and creative direction for music videos and live performance. Drop in your video stills or embeds here.</p>
     <div class="grid">
@@ -100,13 +122,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
       <div><h3>Campaign &amp; Commercial</h3><p>Styling for brand campaigns, e-commerce and advertising.</p></div>
       <div><h3>Music &amp; Performance</h3><p>Wardrobe for music videos, tours and stage.</p></div>
     </div>
-  </div>
-</div>
-
-<div class="panel" id="p-contact">
-  <div class="px" onclick="home()">&times;</div>
-  <div class="pwrap">
-    <div class="eyebrow">Contact</div>
+    <div class="eyebrow sep">Contact</div>
     <h2 class="htitle">Let&rsquo;s work together.</h2>
     <p class="lead">For bookings, collaborations and press enquiries.</p>
     <div class="contact-line"><a href="mailto:hello@vardimurad.com">hello@vardimurad.com</a></div>
@@ -114,13 +130,25 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   </div>
 </div>
 
+<div class="panel" id="p-soul">
+  <div class="px" onclick="home()">&times;</div>
+  <div class="pwrap">
+    <div class="eyebrow">Soul Crafted</div>
+    <h2 class="htitle">Soul Crafted.</h2>
+    <p class="lead">Placeholder &mdash; replace this line with what Soul Crafted actually is.</p>
+    <div class="grid">
+      <div class="tile">Soul Crafted 01</div><div class="tile">Soul Crafted 02</div><div class="tile">Soul Crafted 03</div>
+    </div>
+  </div>
+</div>
+
 <footer class="sf" id="ft">&copy; 2026 Vardi Murad &middot; Stylist &amp; Creative Director</footer>
 <script>
 var TABS=[
 {key:"work",label:"Work",img:"works.jpg"},
-{key:"music",label:"Music Videos",vid:"music_videos.mp4",poster:"music_videos_poster.jpg"},
-{key:"services",label:"Services",img:"services.jpg"},
-{key:"contact",label:"Contact",img:"contacts.jpg"}
+{key:"music",label:"Videos",vid:"music_videos.mp4",poster:"music_videos_poster.jpg"},
+{key:"soul",label:"Soul Crafted",img:"soul_crafted.jpg"},
+{key:"services",label:"Services & Contacts",img:"services.jpg"}
 ];
 
 // build a tab's contents: a photo background, OR a hover-to-play video, plus the label
@@ -341,9 +369,27 @@ function home(){
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape')home();});
 
+var TKEY='vm-theme';
+try{if(localStorage.getItem(TKEY)==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}
+
 function revealSite(){
   document.getElementById('nv').classList.add('in');
   var ft=document.getElementById('ft');if(ft)ft.classList.add('in');
+  showToggle();
+}
+
+function showToggle(){
+  if(document.getElementById('tt'))return;
+  var b=document.createElement('button');b.id='tt';b.type='button';
+  b.setAttribute('aria-label','Toggle light and dark mode');
+  b.innerHTML='<svg class="m" viewBox="0 0 24 24"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.7 8.7 0 1 0 11.1 11.1z"/></svg><svg class="s" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><line x1="12" y1="1.8" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.2"/><line x1="1.8" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.2" y2="12"/><line x1="4.6" y1="4.6" x2="6.2" y2="6.2"/><line x1="17.8" y1="17.8" x2="19.4" y2="19.4"/><line x1="4.6" y1="19.4" x2="6.2" y2="17.8"/><line x1="17.8" y1="6.2" x2="19.4" y2="4.6"/></svg>';
+  document.body.appendChild(b);
+  b.addEventListener('click',function(){
+    var r=document.documentElement,next=r.getAttribute('data-theme')==='light'?'dark':'light';
+    if(next==='light')r.setAttribute('data-theme','light');else r.removeAttribute('data-theme');
+    try{localStorage.setItem(TKEY,next)}catch(e){}
+  });
+  requestAnimationFrame(function(){b.classList.add('in')});
 }
 
 function placeDirect(){
