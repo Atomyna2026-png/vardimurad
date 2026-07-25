@@ -426,7 +426,7 @@ function buildVideoGrid(){
     var s=(i<10?'0':'')+i;
     var t=document.createElement('div');t.className='tile vtile';
     var v=document.createElement('video');
-    v.src='video'+s+'.mp4';v.poster='video'+s+'.jpg';
+    v.src='video'+s+(i<=2?'.mov':'.mp4');v.poster='video'+s+'.jpg';
     v.muted=true;v.loop=true;v.preload='none';
     v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');
     t.appendChild(v);
