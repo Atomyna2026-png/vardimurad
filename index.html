@@ -17,6 +17,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .tab{position:absolute;display:flex;align-items:flex-end;justify-content:center;text-align:center;padding:0 12px 22px;line-height:1.35;background-color:#15151a;background-size:cover;background-position:center;border:1px solid rgba(255,255,255,.72);color:#fff;font-family:var(--fb);font-size:17px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;opacity:0;overflow:hidden;will-change:transform;pointer-events:none;text-shadow:0 1px 10px rgba(0,0,0,.95)}
 .tab.on{pointer-events:auto;cursor:pointer;transition:transform .35s ease,border-color .3s ease,box-shadow .3s ease,filter .3s ease}
 .tab.on:hover{border-color:#fff;box-shadow:0 14px 55px rgba(0,0,0,.55);transform:translateY(-6px) scale(1.04);filter:brightness(1.12)}
+.tabimg{transform:scale(1.02);transition:transform 7s cubic-bezier(.22,.6,.28,1);will-change:transform}
+.tab.on:hover .tabimg{transform:scale(1.2)}
 .fg{position:absolute;will-change:transform;pointer-events:none;opacity:0}
 .em{position:absolute;border-radius:50%;will-change:transform;pointer-events:none;opacity:0}
 .sm{position:absolute;border-radius:50%;filter:blur(45px);will-change:transform;pointer-events:none;opacity:0}
@@ -39,6 +41,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:42px}
 .tile{aspect-ratio:3/4;background:#15151a;border:1px solid rgba(255,255,255,.06);display:flex;align-items:flex-end;padding:14px;color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase;transition:transform .3s,border-color .3s,color .3s;cursor:pointer}
 .tile:hover{transform:translateY(-4px);border-color:rgba(201,169,110,.5);color:var(--cream)}
+#p-music .pwrap{max-width:min(1400px,92vw)}
+#vgrid{grid-template-columns:repeat(2,1fr);gap:18px}
+@media(max-width:640px){#vgrid{grid-template-columns:1fr}}
+.vtile{position:relative;padding:0;overflow:hidden;background:#15151a;aspect-ratio:16/9}
+.vtile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.vtile .vov{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to top,rgba(0,0,0,.78),rgba(0,0,0,0) 58%)}
+.vtile span{position:relative;z-index:2;padding:14px;align-self:flex-end}
 .svc{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:34px;margin-top:42px}
 .svc h3{font-family:var(--fd);font-size:24px;font-weight:400;margin-bottom:10px}
 .svc p{color:#b8b2a8;font-weight:300;line-height:1.65;font-size:14px}
@@ -106,7 +115,8 @@ html[data-theme="light"] #tt .m{display:none}
     <h2 class="htitle">Styling for screen<br>&amp; performance.</h2>
     <p class="lead">Wardrobe and creative direction for music videos and live performance. Drop in your video stills or embeds here.</p>
     <div class="grid">
-      <div class="tile">Video 01</div><div class="tile">Video 02</div><div class="tile">Video 03</div>
+</div>
+    <div class="grid" id="vgrid">
     </div>
   </div>
 </div>
@@ -172,7 +182,12 @@ function fillTab(d,tab){
       var pr=v.play();if(pr&&pr.catch)pr.catch(function(){});
     }
   }else{
-    d.style.backgroundImage="linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.1) 48%,rgba(0,0,0,.32)),url('"+tab.img+"')";
+    var im=document.createElement('div');im.className='tabimg';
+    im.style.cssText="position:absolute;inset:-1px;z-index:0;pointer-events:none;background-image:url('"+tab.img+"');background-size:cover;background-position:center";
+    d.appendChild(im);
+    var og=document.createElement('div');
+    og.style.cssText='position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,.1) 48%,rgba(0,0,0,.32))';
+    d.appendChild(og);
   }
   var lb=document.createElement('span');lb.textContent=tab.label;lb.style.cssText='position:relative;z-index:2';
   d.appendChild(lb);
@@ -366,6 +381,7 @@ function openPanel(id){
 function home(){
   document.querySelectorAll('.panel.open').forEach(function(p){p.classList.remove('open')});
   document.querySelectorAll('.nk a').forEach(function(a){a.classList.remove('active')});
+  syncVideos();
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape')home();});
 
@@ -402,4 +418,38 @@ function placeDirect(){
   });
   ex.style.pointerEvents='none';revealSite();
 }
+
+var VCOUNT=12;
+function buildVideoGrid(){
+  var g=document.getElementById('vgrid');if(!g||g.children.length)return;
+  for(var i=1;i<=VCOUNT;i++){
+    var s=(i<10?'0':'')+i;
+    var t=document.createElement('div');t.className='tile vtile';
+    var v=document.createElement('video');
+    v.src='video'+s+'.mp4';v.poster='video'+s+'.jpg';
+    v.muted=true;v.loop=true;v.preload='none';
+    v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');
+    t.appendChild(v);
+    var o=document.createElement('div');o.className='vov';t.appendChild(o);
+    var lb=document.createElement('span');lb.textContent='Video '+s;t.appendChild(lb);
+    g.appendChild(t);
+  }
+  var pm=document.getElementById('p-music');
+  if(pm)pm.addEventListener('scroll',syncVideos,{passive:true});
+  window.addEventListener('resize',syncVideos);
+  var op=window.openPanel;
+  if(op)window.openPanel=function(id){op(id);syncVideos();};
+}
+function syncVideos(){
+  var pm=document.getElementById('p-music');if(!pm)return;
+  var live=pm.classList.contains('open'),pr=pm.getBoundingClientRect();
+  var list=document.querySelectorAll('#vgrid video');
+  for(var i=0;i<list.length;i++){
+    var v=list[i],show=false;
+    if(live){var r=v.getBoundingClientRect();show=(r.bottom>pr.top-100&&r.top<pr.bottom+100);}
+    if(show){if(v.paused){var p=v.play();if(p&&p.catch)p.catch(function(){});}}
+    else if(!v.paused){try{v.pause()}catch(e){}}
+  }
+}
+buildVideoGrid();
 </script></body></html>
