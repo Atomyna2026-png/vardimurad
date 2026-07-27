@@ -48,6 +48,24 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .vtile{position:relative;overflow:hidden;background:#15151a;aspect-ratio:16/9;border:1px solid rgba(255,255,255,.10);transition:border-color .3s ease,transform .3s ease}
 .vcard:hover .vtile{border-color:rgba(255,255,255,.30);transform:translateY(-4px)}
 .vtile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+/* ==WORKGRID START== */
+#p-work .eyebrow{color:var(--cream)}
+#wscatter{position:relative;grid-column:1/-1;width:100%;height:auto;padding-bottom:0;margin-top:30px}
+.ph{position:absolute;overflow:hidden;background:#15151a;cursor:zoom-in;transition:opacity .35s ease,filter .35s ease}
+.ph img{display:block;width:100%;height:100%;object-fit:cover}
+.ph:hover{opacity:.82}
+@media(max-width:700px){
+  #wscatter{display:flex;flex-direction:column;gap:6px;height:auto!important}
+  .ph{position:relative!important;left:auto!important;top:auto!important;width:100%!important;height:auto!important}
+  .ph img{height:auto}
+}
+#lb{position:fixed;inset:0;z-index:1200;background:rgba(4,4,4,.94);display:none;align-items:center;justify-content:center;cursor:zoom-out;opacity:0;transition:opacity .3s ease}
+#lb.on{display:flex;opacity:1}
+#lb img{max-width:92vw;max-height:88vh}
+html[data-theme="light"] #lb{background:rgba(242,239,233,.96)}
+#lbx{position:absolute;top:22px;right:26px;width:42px;height:42px;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.3);color:#fff;border-radius:50%;font-size:19px;line-height:40px;text-align:center;cursor:pointer}
+html[data-theme="light"] #lbx{border-color:rgba(22,21,19,.25);background:rgba(255,255,255,.5);color:#161513}
+/* ==WORKGRID END== */
 .vcap{font-family:var(--fb);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);transition:color .25s ease}
 .vcard:hover .vcap{color:var(--cream)}
 .svc{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:34px;margin-top:42px}
@@ -101,11 +119,9 @@ html[data-theme="light"] #tt .m{display:none}
   <div class="px" onclick="home()">&times;</div>
   <div class="pwrap">
     <div class="eyebrow">Selected Work</div>
-    <h2 class="htitle">Fashion &amp; editorial styling<br>that tells a story.</h2>
-    <p class="lead">A selection of editorial, campaign and cover projects. Replace these tiles with your own images &mdash; each one can link out to a full gallery.</p>
+    <h2 class="htitle">Fashion &amp; editorial styling</h2>
     <div class="grid">
-      <div class="tile">Editorial 01</div><div class="tile">Campaign 02</div><div class="tile">Cover Shoot 03</div>
-      <div class="tile">Lookbook 04</div><div class="tile">Editorial 05</div><div class="tile">Styling 06</div>
+      <div id="wscatter"></div>
     </div>
   </div>
 </div>
@@ -430,7 +446,7 @@ function buildVideoGrid(){
     var c=document.createElement('div');c.className='vcard';
     var t=document.createElement('div');t.className='vtile';c.appendChild(t);
     var v=document.createElement('video');
-    v.src='video'+s+(i<=2?'.mov':'.mp4');v.poster='video'+s+'.jpg';
+    v.src='video'+s+'.mp4';v.poster='video'+s+'.jpg';
     v.muted=true;v.loop=true;v.preload='none';
     v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');
     t.appendChild(v);
@@ -455,4 +471,84 @@ function syncVideos(){
   }
 }
 buildVideoGrid();
+
+
+/* ---- Work photos: justified grid + click to enlarge ---- */
+var WCOUNT=48, WGAP=6, WITEMS=[];
+function buildScatter(){
+  var box=document.getElementById('wscatter');if(!box||box.children.length)return;
+  var pending=WCOUNT;
+  for(var i=1;i<=WCOUNT;i++){
+    var nn=(i<10?'0':'')+i, src='work'+nn+'.jpg';
+    var el=document.createElement('div');el.className='ph';
+    var im=document.createElement('img');im.alt='Work '+nn;
+    el.appendChild(im);box.appendChild(el);
+    (function(el,im,src){
+      el.onclick=function(){openLb(src)};
+      im.onload=function(){
+        WITEMS.push({el:el,ar:(im.naturalWidth/im.naturalHeight)||1});
+        if(--pending===0)shuffleWork();
+      };
+      im.onerror=function(){
+        el.parentNode&&el.parentNode.removeChild(el);
+        if(--pending===0)shuffleWork();
+      };
+      im.src=src;
+    })(el,im,src);
+  }
+  var t;window.addEventListener('resize',function(){clearTimeout(t);t=setTimeout(layoutWork,150)});
+}
+function layoutWork(){
+  var box=document.getElementById('wscatter');if(!box||!WITEMS.length)return;
+  if(window.innerWidth<=700){box.style.height='';return;}
+  var W=box.clientWidth,gap=WGAP,target=Math.max(240,Math.min(430,W/3));
+  var rows=[],row=[],sum=0,i;
+  for(i=0;i<WITEMS.length;i++){
+    row.push(WITEMS[i]);sum+=WITEMS[i].ar;
+    if(sum*target+gap*(row.length-1)>=W){rows.push({r:row,s:sum,last:false});row=[];sum=0;}
+  }
+  if(row.length)rows.push({r:row,s:sum,last:true});
+  var y=0;
+  for(i=0;i<rows.length;i++){
+    var R=rows[i],avail=W-gap*(R.r.length-1),h=avail/R.s;
+    if(R.last&&h>target*1.35)h=target;
+    var x=0;
+    for(var j=0;j<R.r.length;j++){
+      var w=h*R.r[j].ar,st=R.r[j].el.style;
+      st.left=x.toFixed(2)+'px';st.top=y.toFixed(2)+'px';
+      st.width=w.toFixed(2)+'px';st.height=h.toFixed(2)+'px';
+      x+=w+gap;
+    }
+    y+=h+gap;
+  }
+  box.style.height=Math.max(0,y-gap).toFixed(2)+'px';
+}
+function openLb(src){
+  var lb=document.getElementById('lb');
+  if(!lb){
+    lb=document.createElement('div');lb.id='lb';
+    var x=document.createElement('div');x.id='lbx';x.innerHTML='&times;';lb.appendChild(x);
+    var im=document.createElement('img');im.id='lbimg';lb.appendChild(im);
+    lb.addEventListener('click',closeLb);
+    document.body.appendChild(lb);
+  }
+  document.getElementById('lbimg').src=src;
+  lb.classList.add('on');
+}
+function closeLb(){var lb=document.getElementById('lb');if(lb)lb.classList.remove('on');}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLb();});
+function shuffleWork(){
+  for(var i=WITEMS.length-1;i>0;i--){
+    var j=Math.floor(Math.random()*(i+1)), t=WITEMS[i];
+    WITEMS[i]=WITEMS[j];WITEMS[j]=t;
+  }
+  layoutWork();
+}
+(function(){
+  var op=window.openPanel;
+  if(typeof op==='function'){
+    window.openPanel=function(id){op(id);if(id==='work')shuffleWork();};
+  }
+})();
+buildScatter();
 </script></body></html>
