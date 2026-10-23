@@ -445,12 +445,31 @@ function placeDirect(){
   ex.style.pointerEvents='none';revealSite();
 }
 
-var VCOUNT=12;
-var VTITLES={1:'Alina Pash - Black Hearse',2:'Alina Pash - Black Hearse',3:'Eyeflood - Evaporating',4:'Eyeflood - Evaporating',5:'malena fleshing light',6:'alina pash howling at the moon',7:'alina pash yin',8:'Travis scott assisted',9:'ye rolling loud assisted',10:'dreamhaose faashion show',11:'Malena junior eurovision',12:'eyeflood live performance'};
+// Each entry = one video on the Videos page. "n" is the file number: n=13 -> video13.mp4 (+ video13.jpg poster).
+// To remove a video, delete its line. To add one, add a line. Leave t:'' for no caption.
+var VIDS=[
+{n:1,t:'Alina Pash - Black Hearse'},
+{n:2,t:'Alina Pash - Black Hearse'},
+{n:3,t:'Eyeflood - Evaporating'},
+{n:4,t:'Eyeflood - Evaporating'},
+{n:5,t:'malena fleshing light'},
+{n:7,t:'alina pash yin'},
+{n:8,t:'Travis scott assisted'},
+{n:9,t:'ye rolling loud assisted'},
+{n:10,t:'dreamhaose faashion show'},
+{n:11,t:'Malena junior eurovision'},
+{n:12,t:'eyeflood live performance'},
+{n:13,t:'Ego'},
+{n:14,t:'Fear'},
+{n:15,t:'Icarus'},
+{n:16,t:'Requiem'},
+{n:17,t:'Maléna - Sent From Above'},
+{n:18,t:'Maléna - Sent From Above (2)'}
+];
 function buildVideoGrid(){
   var g=document.getElementById('vgrid');if(!g||g.children.length)return;
-  for(var i=1;i<=VCOUNT;i++){
-    var s=(i<10?'0':'')+i;
+  for(var i=0;i<VIDS.length;i++){
+    var s=(VIDS[i].n<10?'0':'')+VIDS[i].n;
     var c=document.createElement('div');c.className='vcard';
     var t=document.createElement('div');t.className='vtile';c.appendChild(t);
     var v=document.createElement('video');
@@ -458,7 +477,7 @@ function buildVideoGrid(){
     v.muted=true;v.loop=true;v.preload='none';
     v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');
     t.appendChild(v);
-    var lb=document.createElement('div');lb.className='vcap';lb.textContent=VTITLES[i]||('Video '+s);c.appendChild(lb);
+    if(VIDS[i].t){var lb=document.createElement('div');lb.className='vcap';lb.textContent=VIDS[i].t;c.appendChild(lb);}
     g.appendChild(c);
   }
   var pm=document.getElementById('p-music');
@@ -482,7 +501,7 @@ buildVideoGrid();
 
 
 /* ---- Work photos: justified grid + click to enlarge ---- */
-var WCOUNT=48, WGAP=6, WITEMS=[];
+var WCOUNT=52, WGAP=6, WITEMS=[];
 function buildScatter(){
   var box=document.getElementById('wscatter');if(!box||box.children.length)return;
   var pending=WCOUNT;
