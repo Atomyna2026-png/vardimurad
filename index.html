@@ -445,27 +445,27 @@ function placeDirect(){
   ex.style.pointerEvents='none';revealSite();
 }
 
-// Each entry = one video on the Videos page. "n" is the file number: n=13 -> video13.mp4 (+ video13.jpg poster).
+// Each entry = one video on the Videos page, shown in this order (top to bottom, left to right). "n" is the file number: n=13 -> video13.mp4 (+ video13.jpg poster).
 // To remove a video, delete its line. To add one, add a line. Leave t:'' for no caption.
 var VIDS=[
-{n:1,t:'Alina Pash - Black Hearse'},
-{n:2,t:'Alina Pash - Black Hearse'},
-{n:3,t:'Eyeflood - Evaporating'},
-{n:4,t:'Eyeflood - Evaporating'},
-{n:5,t:'malena fleshing light'},
-{n:7,t:'alina pash yin'},
-{n:8,t:'Travis scott assisted'},
-{n:9,t:'ye rolling loud assisted'},
-{n:10,t:'dreamhaose faashion show'},
-{n:11,t:'Malena junior eurovision'},
-{n:12,t:'eyeflood live performance'},
-{n:13,t:'Ego'},
-{n:14,t:'Fear'},
-{n:15,t:'Icarus'},
-{n:16,t:'Requiem'},
-{n:17,t:'Maléna - Sent From Above'},
-{n:18,t:'Maléna - Sent From Above (2)'},
-{n:19,t:'Christmas'}
+{n:1,t:'ALINA PASH BLACK HEARSE'},
+{n:2,t:'ALINA PASH BLACK HEARSE'},
+{n:3,t:'EYEFLOOD EVAPORATING'},
+{n:4,t:'EYEFLOOD EVAPORATING'},
+{n:17,t:'MALENA SENT FROM ABOVE'},
+{n:18,t:'MALENA SENT FROM ABOVE'},
+{n:8,t:'TRAVIS SCOTT FE!N ASSISTED'},
+{n:9,t:'YE ROLLING LOUD ASSISTED'},
+{n:7,t:'ALINA PASH YIN'},
+{n:5,t:'MALENA FLESHING LIGHTS'},
+{n:19,t:'CHRISTMAS'},
+{n:16,t:'REQUIEM'},
+{n:13,t:'FEAR'},
+{n:14,t:'EGO'},
+{n:15,t:'ICARUS'},
+{n:12,t:'EYEFLOOD LIVE PERFORMANCE'},
+{n:10,t:'DREAMHOUSE FASHION SHOW'},
+{n:11,t:'MALENA JUNIOR EUROVISION'}
 ];
 function buildVideoGrid(){
   var g=document.getElementById('vgrid');if(!g||g.children.length)return;
